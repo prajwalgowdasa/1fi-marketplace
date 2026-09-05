@@ -28,7 +28,7 @@ export function AffordabilityCard({ pricePaise, tenureMonths }: AffordabilityCar
       </dl>
       <details className="mt-4 border-t border-[var(--line)] pt-4 text-sm leading-6 text-[var(--ink-500)]">
         <summary className="cursor-pointer font-semibold text-[var(--ink-900)]">How 1Fi financing works</summary>
-        <p className="mt-3">Your limit depends on lender approval and eligible holdings. Selected eligible units may be lien-marked for the financing period.</p>
+        <p className="mt-3">Eligible units stay invested while selected units may be lien-marked for the financing period. Your limit depends on lender approval and eligible holdings.</p>
         <p className="mt-2">Falling market value can require more collateral or partial repayment.</p>
       </details>
     </section>

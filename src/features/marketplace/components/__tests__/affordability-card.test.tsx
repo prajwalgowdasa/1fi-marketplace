@@ -17,14 +17,14 @@ describe("AffordabilityCard", () => {
     expect(screen.getByText("How 1Fi financing works")).toBeVisible();
   });
 
-  it("discloses approval, lien, and market-value risk when financing details are opened", async () => {
+  it("discloses invested holdings, approval, lien, and market-value risk when financing details are opened", async () => {
     const user = userEvent.setup();
     render(<AffordabilityCard pricePaise={7_990_000} tenureMonths={24} />);
 
     await user.click(screen.getByText("How 1Fi financing works"));
 
+    expect(screen.getByText(/eligible units stay invested while selected units may be lien-marked/i)).toBeVisible();
     expect(screen.getByText(/lender approval and eligible holdings/i)).toBeVisible();
-    expect(screen.getByText(/selected eligible units may be lien-marked/i)).toBeVisible();
     expect(screen.getByText(/falling market value can require more collateral or partial repayment/i)).toBeVisible();
   });
 });
