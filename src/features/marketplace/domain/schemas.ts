@@ -117,9 +117,10 @@ const productSchemaBase = z
 
 export const productSchema: z.ZodType<Product> = productSchemaBase.transform((product) => {
   if (product.originalPricePaise === undefined) {
-    const { originalPricePaise: _, ...productWithoutOriginalPrice } = product;
-    return productWithoutOriginalPrice;
+    const productWithoutOriginalPrice = { ...product };
+    delete productWithoutOriginalPrice.originalPricePaise;
+    return productWithoutOriginalPrice as Product;
   }
 
-  return product;
+  return product as Product;
 });

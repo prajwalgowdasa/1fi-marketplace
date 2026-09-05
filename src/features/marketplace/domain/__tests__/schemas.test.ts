@@ -50,6 +50,12 @@ describe("marketplace schemas", () => {
     expect(PRODUCTS.every((product) => productSchema.safeParse(product).success)).toBe(true);
   });
 
+  it("keeps an absent optional original price absent after parsing", () => {
+    const parsedProduct = productSchema.parse(PRODUCTS[0]!);
+
+    expect("originalPricePaise" in parsedProduct).toBe(false);
+  });
+
   it("rejects review item ratings outside the supported range", () => {
     const invalidRating = structuredClone(PRODUCTS[0]!);
     invalidRating.reviews.items[0]!.rating = 6 as 5;
