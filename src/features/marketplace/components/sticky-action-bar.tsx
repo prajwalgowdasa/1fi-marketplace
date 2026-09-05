@@ -6,7 +6,7 @@ type StickyActionBarProps = {
 export function StickyActionBar({ disabled, onClick }: StickyActionBarProps) {
   return (
     <button
-      className="sticky bottom-20 z-10 mt-8 min-h-12 w-full rounded-2xl bg-[var(--brand-500)] px-4 text-sm font-semibold text-white shadow-[var(--shadow-float)] disabled:cursor-not-allowed disabled:opacity-45"
+      className="sticky bottom-20 z-10 mt-8 min-h-12 w-full rounded-2xl bg-[var(--brand-500)] px-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45"
       disabled={disabled}
       onClick={onClick}
       type="button"

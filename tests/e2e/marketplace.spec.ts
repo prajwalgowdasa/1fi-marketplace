@@ -169,13 +169,13 @@ test("keeps only the checkout buttons sticky above the bottom navigation", async
 
   const viewPlans = page.getByRole("button", { name: "View EMI plans" });
   await expect(viewPlans).toHaveCSS("position", "sticky");
-  await expect(viewPlans).not.toHaveCSS("box-shadow", "none");
+  await expect(viewPlans).toHaveCSS("box-shadow", "none");
   await expect(viewPlans.locator("xpath=..")).not.toHaveCSS("backdrop-filter", /blur/);
 
   await viewPlans.click();
   const proceed = page.getByRole("button", { name: "Proceed" });
   await expect(proceed).toHaveCSS("position", "sticky");
-  await expect(proceed).not.toHaveCSS("box-shadow", "none");
+  await expect(proceed).toHaveCSS("box-shadow", "none");
   await expect(proceed.locator("xpath=..")).not.toHaveCSS("backdrop-filter", /blur/);
 });
 

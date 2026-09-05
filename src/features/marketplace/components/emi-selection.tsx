@@ -53,7 +53,7 @@ export function EmiSelection({ onBack, onSubmit, product, variant }: EmiSelectio
         {selectedPlan && <div className="mt-6"><PaymentBreakdown plan={selectedPlan} pricePaise={variant.pricePaise} /></div>}
         {error && <p aria-live="polite" className="mt-4 text-sm text-red-700" role="alert">{error}</p>}
         <button
-          className="sticky bottom-20 z-10 mt-6 min-h-12 w-full rounded-2xl bg-[var(--brand-500)] px-4 text-sm font-semibold text-white shadow-[var(--shadow-float)] disabled:cursor-not-allowed disabled:opacity-45"
+          className="sticky bottom-20 z-10 mt-6 min-h-12 w-full rounded-2xl bg-[var(--brand-500)] px-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45"
           disabled={!selectedPlan || isPending}
           onClick={submit}
           type="button"

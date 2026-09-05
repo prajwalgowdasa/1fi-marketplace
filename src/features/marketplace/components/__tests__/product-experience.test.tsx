@@ -90,7 +90,8 @@ describe("ProductExperience", () => {
 
     const action = screen.getByRole("button", { name: "View EMI plans" });
     expect(action.parentElement?.lastElementChild).toBe(action);
-    expect(action).toHaveClass("sticky", "bottom-20", "shadow-[var(--shadow-float)]");
+    expect(action).toHaveClass("sticky", "bottom-20");
+    expect(action).not.toHaveClass("shadow-[var(--shadow-float)]");
 
     await user.click(action);
     expect(screen.getByRole("heading", { name: "Choose your EMI plan" })).toBeVisible();
