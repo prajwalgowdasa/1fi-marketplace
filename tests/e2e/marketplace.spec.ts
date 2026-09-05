@@ -1,0 +1,112 @@
+import { expect, test, type Page } from "@playwright/test";
+
+const marketplaceUrl = "/shop?tab=marketplace";
+const screenshotDirectory = "docs/screenshots";
+
+async function captureSubmissionScreenshot(page: Page, filename: string) {
+  await page.locator("nextjs-portal").evaluateAll((portals) => portals.forEach((portal) => portal.remove()));
+  const screenshot = await page.screenshot();
+  expect(screenshot.byteLength).toBeGreaterThan(0);
+  if (process.env.UPDATE_SCREENSHOTS === "1") {
+    await page.screenshot({ path: `${screenshotDirectory}/${filename}` });
+  }
+}
+
+async function openIphoneConfiguration(page: Page) {
+  await page.goto(marketplaceUrl);
+  await expect(page.getByRole("link", { name: /iPhone 17/i })).toBeVisible();
+  await page.getByRole("link", { name: /iPhone 17/i }).click();
+  await page.locator("label").filter({ hasText: /^128 GB$/ }).click();
+  await page.locator("label").filter({ hasText: /^Black$/ }).click();
+}
+
+test("user completes the 1Fi Marketplace mock flow", async ({ page }) => {
+  await openIphoneConfiguration(page);
+  await page.getByRole("button", { name: "View EMI plans" }).click();
+  await page.getByRole("radio", { name: /12 months/ }).check();
+  await page.getByRole("button", { name: /Proceed with ₹6,658.33 per month/ }).click();
+  await expect(page).toHaveURL(/\/shop\/marketplace\/confirmation\?/);
+  await expect(page.getByRole("heading", { name: "Plan selected!" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Back to product details" })).toHaveAttribute(
+    "href",
+    "/shop/marketplace/iphone-17",
+  );
+  await expect(page.getByRole("link", { name: "Back to Marketplace" })).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByText("Mock Marketplace request created")).toBeVisible();
+});
+
+test("filters the catalog and recovers from an empty search", async ({ page }) => {
+  await page.goto(marketplaceUrl);
+  const search = page.getByRole("searchbox", { name: "Search Marketplace" });
+  await search.fill("Pixel");
+  await expect(page).toHaveURL(/q=Pixel/);
+  await expect(page.getByRole("link", { name: /Pixel 10/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /iPhone 17/i })).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Laptops" }).click();
+  await expect(page).toHaveURL(/category=laptops/);
+  await expect(page.getByRole("link", { name: /Pixel 10/i })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "No products found" })).toBeVisible();
+
+  await search.fill("not-a-product");
+  await expect(page).toHaveURL(/q=not-a-product/);
+  await expect(page.getByRole("heading", { name: "No products found" })).toBeVisible();
+  await page.getByRole("button", { name: "Clear filters" }).click();
+  await expect(page).toHaveURL(marketplaceUrl);
+  await expect(page.getByRole("link", { name: /iPhone 17/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: "All" })).toHaveAttribute("aria-pressed", "true");
+});
+
+test("recovers from a missing product", async ({ page }) => {
+  await page.goto("/shop/marketplace/not-a-product");
+  await expect(page.getByRole("heading", { name: "Product not found" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Back to Marketplace" })).toHaveAttribute("href", marketplaceUrl);
+});
+
+test("supports keyboard navigation for Shop tabs and EMI choices", async ({ page }) => {
+  await page.goto(marketplaceUrl);
+  const marketplaceTab = page.getByRole("tab", { name: "1Fi Marketplace" });
+  await marketplaceTab.focus();
+  await page.keyboard.press("Home");
+  await expect(page.getByRole("tab", { name: "Top Brands" })).toBeFocused();
+  await expect(page.getByRole("tab", { name: "Top Brands" })).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("End");
+  await expect(marketplaceTab).toBeFocused();
+  await expect(marketplaceTab).toHaveAttribute("aria-selected", "true");
+
+  await openIphoneConfiguration(page);
+  await page.getByRole("button", { name: "View EMI plans" }).click();
+  const sixMonths = page.getByRole("radio", { name: /6 months/ });
+  await sixMonths.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(page.getByRole("radio", { name: /12 months/ })).toBeChecked();
+});
+
+test("captures the assignment walkthrough at the mobile submission viewport", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-chrome", "Submission captures use the 390 by 844 mobile project.");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.route("**/api/orders", async (route) => route.fulfill({
+    contentType: "application/json",
+    status: 201,
+    body: JSON.stringify({ data: { referenceId: "1FI-A1B2C3D4", productId: "iphone-17", variantId: "iphone-17-128-black", plan: { tenureMonths: 12, regularInstallmentPaise: 665833, finalInstallmentPaise: 665837, interestRatePercent: 0, totalPayablePaise: 7990000 } } }),
+  }));
+
+  await page.goto(marketplaceUrl);
+  await expect(page.getByRole("link", { name: /iPhone 17/i })).toBeVisible();
+  await captureSubmissionScreenshot(page, "marketplace.png");
+
+  await page.getByRole("link", { name: /iPhone 17/i }).click();
+  await page.locator("label").filter({ hasText: /^128 GB$/ }).click();
+  await page.locator("label").filter({ hasText: /^Black$/ }).click();
+  await captureSubmissionScreenshot(page, "product-details.png");
+
+  await page.getByRole("button", { name: "View EMI plans" }).click();
+  await page.getByRole("radio", { name: /12 months/ }).check();
+  await captureSubmissionScreenshot(page, "emi-selection.png");
+
+  await page.getByRole("button", { name: /Proceed with ₹6,658.33 per month/ }).click();
+  await expect(page.getByRole("heading", { name: "Plan selected!" })).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 96));
+  await captureSubmissionScreenshot(page, "confirmation.png");
+});
