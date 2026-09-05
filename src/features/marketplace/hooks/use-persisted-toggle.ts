@@ -24,7 +24,7 @@ export function usePersistedToggle(storageKey: string, itemId: string): Persiste
   const [persistenceAvailable, setPersistenceAvailable] = useState(true);
   const storedIdsRef = useRef(storedIds);
 
-  useEffect(() => {
+  const hydrate = useCallback(() => {
     try {
       const nextStoredIds = parseStoredIds(localStorage.getItem(storageKey));
       storedIdsRef.current = nextStoredIds;
@@ -37,6 +37,11 @@ export function usePersistedToggle(storageKey: string, itemId: string): Persiste
       setPersistenceAvailable(false);
     }
   }, [storageKey]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(hydrate, 0);
+    return () => window.clearTimeout(timer);
+  }, [hydrate]);
 
   const toggle = useCallback(() => {
     const nextStoredIds = new Set(storedIdsRef.current);

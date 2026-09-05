@@ -7,9 +7,21 @@ import { SAVED_PRODUCTS_KEY, useSavedProduct } from "../use-saved-product";
 afterEach(() => {
   localStorage.clear();
   vi.restoreAllMocks();
+  vi.useRealTimers();
 });
 
 describe("persisted marketplace preferences", () => {
+  it("hydrates a stored saved product after the initial render", () => {
+    vi.useFakeTimers();
+    localStorage.setItem(SAVED_PRODUCTS_KEY, '["iphone-17"]');
+
+    const { result } = renderHook(() => useSavedProduct("iphone-17"));
+
+    expect(result.current.active).toBe(false);
+    act(() => vi.runAllTimers());
+    expect(result.current.active).toBe(true);
+  });
+
   it("persists a saved product when toggled", async () => {
     const { result } = renderHook(() => useSavedProduct("iphone-17"));
 
