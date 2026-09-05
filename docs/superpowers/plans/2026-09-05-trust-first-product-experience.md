@@ -19,7 +19,7 @@
 - Use paise integers and the existing `calculateEmiPlan` function for every displayed payment value.
 - Use 44-pixel minimum interactive targets, stable accessible names, polite live status messages, and reduced-motion-safe styling.
 - Add no new runtime dependency.
-- The project directory currently has no Git repository. Run each verification checkpoint; run the listed commit only after repository initialization is separately authorized.
+- Local Git history is available for implementation checkpoints. Do not add a remote, push, publish, or merge outside this feature branch.
 
 ---
 
