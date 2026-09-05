@@ -10,7 +10,7 @@ This independent frontend assignment presents a mobile-first 1Fi Marketplace exp
 
 ## Implemented Flow
 
-Open Marketplace, search or filter the catalog, configure an in-stock product, choose an EMI tenure, and receive a reloadable mock confirmation.
+Open Marketplace, search or filter the catalog, and use deterministic related-product suggestions to continue browsing. Product details include Share and locally saved-product actions, transparent affordability guidance, purchase-confidence facts, and curated demonstration reviews with local Helpful voting. Configure an in-stock product, choose an EMI tenure, and receive a reloadable mock confirmation.
 
 ## Screenshots
 
@@ -62,7 +62,7 @@ The Shop tabs and EMI plans support keyboard operation, controls have accessible
 
 ## Assumptions and Scope Boundaries
 
-Top Brands and Nearby Stores are intentional empty states. Orders and financial values are simulated; no personal data is collected. This work is an independent assignment and does not use or depend on 1Fi private code, live services, lending, payment, or order fulfilment systems.
+Top Brands and Nearby Stores are intentional empty states. Products, recommendations, affordability guidance, purchase-confidence facts, and reviews use local deterministic fixtures; saved products and Helpful votes use browser storage. They do not represent real user activity, lender approval, merchant decisions, inventory, fulfilment, or financial advice. Orders and financial values are simulated, and no personal data is collected. This work is an independent assignment and does not use or depend on 1Fi private code, live services, lending, payment, or order fulfilment systems.
 
 ## Asset Provenance
 

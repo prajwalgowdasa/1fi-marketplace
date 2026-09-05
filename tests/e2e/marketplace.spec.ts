@@ -36,6 +36,49 @@ test("user completes the 1Fi Marketplace mock flow", async ({ page }) => {
   await expect(page.getByText("Mock Marketplace request created")).toBeVisible();
 });
 
+test("supports trust-first product decisions", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-chrome", "This regression covers the mobile product-decision flow.");
+
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "share", {
+      configurable: true,
+      value: async (payload: ShareData) => {
+        (
+          window as typeof window & { __sharedProduct?: { title: string | undefined; url: string | undefined } }
+        ).__sharedProduct = { title: payload.title, url: payload.url };
+      },
+    });
+  });
+  await page.goto("/shop/marketplace/iphone-17");
+  const saveProduct = page.getByRole("button", { name: "Save iPhone 17" });
+  await saveProduct.click();
+  await expect(page.getByRole("button", { name: "Remove iPhone 17 from saved products" })).toHaveAttribute("aria-pressed", "true");
+
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Remove iPhone 17 from saved products" })).toHaveAttribute("aria-pressed", "true");
+
+  const currentUrl = page.url();
+  await page.getByRole("button", { name: "Share iPhone 17" }).click();
+  await expect.poll(() => page.evaluate(() => (
+    window as typeof window & { __sharedProduct?: { title: string | undefined; url: string | undefined } }
+  ).__sharedProduct)).toEqual({ title: "iPhone 17", url: currentUrl });
+
+  await page.getByRole("link", { name: "4.6 · 128 reviews" }).click();
+  await expect(page).toHaveURL(/#product-reviews$/);
+
+  const firstHelpful = page.getByRole("button", { name: /^Helpful/ }).first();
+  await expect(firstHelpful).toHaveText("Helpful (24)");
+  await firstHelpful.click();
+  await expect(firstHelpful).toHaveText("Helpful (25)");
+
+  await page.locator("label").filter({ hasText: /^128 GB$/ }).click();
+  await page.locator("label").filter({ hasText: /^Black$/ }).click();
+  await page.getByRole("button", { name: "View EMI plans" }).click();
+  await page.getByRole("radio", { name: /12 months/ }).check();
+  await page.getByRole("button", { name: /Proceed with ₹6,658.33 per month/ }).click();
+  await expect(page.getByRole("heading", { name: "Plan selected!" })).toBeVisible();
+});
+
 test("filters the catalog and recovers from an empty search", async ({ page }) => {
   await page.goto(marketplaceUrl);
   const search = page.getByRole("searchbox", { name: "Search Marketplace" });
@@ -99,6 +142,12 @@ test("captures the assignment walkthrough at the mobile submission viewport", as
   await page.getByRole("link", { name: /iPhone 17/i }).click();
   await page.locator("label").filter({ hasText: /^128 GB$/ }).click();
   await page.locator("label").filter({ hasText: /^Black$/ }).click();
+  const shareAction = page.getByRole("button", { name: "Share iPhone 17" });
+  await shareAction.evaluate((element) => window.scrollTo(0, element.getBoundingClientRect().top + window.scrollY - 16));
+  await expect(shareAction).toBeInViewport();
+  await expect(page.getByRole("button", { name: "Save iPhone 17" })).toBeInViewport();
+  await expect(page.getByRole("link", { name: "4.6 · 128 reviews" })).toBeInViewport();
+  await expect(page.getByRole("heading", { name: "Pay smarter with 1Fi" })).toBeInViewport();
   await captureSubmissionScreenshot(page, "product-details.png");
 
   await page.getByRole("button", { name: "View EMI plans" }).click();
