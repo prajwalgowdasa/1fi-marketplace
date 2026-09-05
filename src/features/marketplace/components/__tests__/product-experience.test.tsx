@@ -62,17 +62,18 @@ describe("ProductExperience", () => {
     const user = userEvent.setup();
     render(<ProductExperience product={iphoneFixture} relatedProducts={relatedFixtures} />);
 
-    const sectionHeadings = [
-      "iPhone 17",
-      "Pay smarter with 1Fi",
-      "Highlights",
-      "Purchase confidence",
-      "Customer reviews",
-      "You may also like",
-    ].map((name) => screen.getByRole("heading", { name }));
+    const orderedSections = [
+      screen.getByRole("heading", { name: "iPhone 17" }),
+      screen.getByRole("heading", { name: "Pay smarter with 1Fi" }),
+      screen.getByRole("region", { name: "Product options" }),
+      screen.getByRole("heading", { name: "Highlights" }),
+      screen.getByRole("heading", { name: "Purchase confidence" }),
+      screen.getByRole("heading", { name: "Customer reviews" }),
+      screen.getByRole("heading", { name: "You may also like" }),
+    ];
 
-    sectionHeadings.slice(1).forEach((heading, index) => {
-      const position = sectionHeadings[index]!.compareDocumentPosition(heading);
+    orderedSections.slice(1).forEach((section, index) => {
+      const position = orderedSections[index]!.compareDocumentPosition(section);
       expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     });
 
@@ -93,6 +94,15 @@ describe("ProductExperience", () => {
 
     await user.click(action);
     expect(screen.getByRole("heading", { name: "Choose your EMI plan" })).toBeVisible();
+  });
+
+  it("does not leave related-product spacing when recommendations are empty", () => {
+    render(<ProductExperience product={iphoneFixture} relatedProducts={[]} />);
+
+    const reviewsHeading = screen.getByRole("heading", { name: "Customer reviews" });
+    const actionBar = screen.getByRole("button", { name: "View EMI plans" }).parentElement;
+
+    expect(actionBar?.previousElementSibling).toContainElement(reviewsHeading);
   });
 
   it("returns from the EMI stage with the variant selection preserved", async () => {

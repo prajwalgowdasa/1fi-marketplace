@@ -69,7 +69,7 @@ export function ProductExperience({
         <div className="mt-7"><ProductFeatures features={product.features} /></div>
         <div className="mt-7"><PurchaseConfidence commerce={product.commerce} /></div>
         <div className="mt-7"><ProductReviews reviews={product.reviews} /></div>
-        <div className="mt-7"><RelatedProducts products={recommendations} /></div>
+        {recommendations.length > 0 ? <div className="mt-7"><RelatedProducts products={recommendations} /></div> : null}
         <StickyActionBar disabled={!selectedVariant} onClick={() => setStage("emi")} />
       </div>
     </>
