@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import { PRODUCTS, toProductSummary } from "../../data/products";
-import { catalogQuerySchema, confirmationQuerySchema, orderRequestSchema } from "../schemas";
+import {
+  catalogQuerySchema,
+  confirmationQuerySchema,
+  orderRequestSchema,
+  productSchema,
+} from "../schemas";
 
 describe("marketplace schemas", () => {
   it("rejects an unsupported category and overlong search query", () => {
@@ -39,5 +44,23 @@ describe("marketplace schemas", () => {
       startingPricePaise: 6_999_900,
       startingEmi: { tenureMonths: 18, totalPayablePaise: 6_999_900 },
     });
+  });
+
+  it("accepts the product fixtures", () => {
+    expect(PRODUCTS.every((product) => productSchema.safeParse(product).success)).toBe(true);
+  });
+
+  it("rejects review item ratings outside the supported range", () => {
+    const invalidRating = structuredClone(PRODUCTS[0]!);
+    invalidRating.reviews.items[0]!.rating = 6 as 5;
+
+    expect(productSchema.safeParse(invalidRating).success).toBe(false);
+  });
+
+  it("rejects review distributions that exceed the total review count", () => {
+    const invalidDistribution = structuredClone(PRODUCTS[0]!);
+    invalidDistribution.reviews.totalCount = 2;
+
+    expect(productSchema.safeParse(invalidDistribution).success).toBe(false);
   });
 });

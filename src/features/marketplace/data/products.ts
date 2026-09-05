@@ -1,17 +1,50 @@
 import { calculateEmiPlan } from "../domain/emi";
-import type { Product, ProductSummary } from "../domain/types";
+import type { Product, ProductReviewSummary, ProductSummary } from "../domain/types";
 
-function freezeProduct(product: Product): Product {
-  product.images.forEach(Object.freeze);
-  product.variants.forEach((variant) => {
+function createCommerce() {
+  return {
+    seller: "1Fi Demo Partner",
+    deliveryEstimate: "Estimated 2–4 business days",
+    warranty: "1-year manufacturer warranty",
+    returns: "7-day replacement for eligible defects",
+  };
+}
+
+function createReviewSummary(productId: string, productName: string): ProductReviewSummary {
+  return {
+    average: 4.6,
+    totalCount: 128,
+    distribution: { "1": 2, "2": 3, "3": 9, "4": 28, "5": 86 },
+    items: [
+      { id: `${productId}-review-1`, reviewer: "Aarav M.", rating: 5, date: "2026-08-18", title: "Reliable for everyday use", body: `${productName} has felt responsive and dependable in daily use. The configuration matched the listing.`, helpfulCount: 24, verifiedPurchase: true },
+      { id: `${productId}-review-2`, reviewer: "Meera S.", rating: 4, date: "2026-08-09", title: "Good overall experience", body: "The product arrived as described and setup was straightforward. Packaging and included accessories were in good condition.", helpfulCount: 15, verifiedPurchase: true },
+      { id: `${productId}-review-3`, reviewer: "Kabir R.", rating: 5, date: "2026-07-27", title: "Matches the specifications", body: "Performance has matched the stated highlights so far. Variant and colour details were accurate.", helpfulCount: 11, verifiedPurchase: true },
+    ],
+  };
+}
+
+function freezeProduct(product: Omit<Product, "commerce" | "reviews">): Product {
+  const productWithTrustData: Product = {
+    ...product,
+    commerce: createCommerce(),
+    reviews: createReviewSummary(product.id, product.name),
+  };
+
+  productWithTrustData.images.forEach(Object.freeze);
+  productWithTrustData.variants.forEach((variant) => {
     Object.freeze(variant.attributes);
     Object.freeze(variant);
   });
-  Object.freeze(product.images);
-  Object.freeze(product.features);
-  Object.freeze(product.variants);
-  Object.freeze(product.eligibleTenures);
-  return Object.freeze(product);
+  Object.freeze(productWithTrustData.images);
+  Object.freeze(productWithTrustData.features);
+  Object.freeze(productWithTrustData.variants);
+  Object.freeze(productWithTrustData.eligibleTenures);
+  Object.freeze(productWithTrustData.commerce);
+  productWithTrustData.reviews.items.forEach(Object.freeze);
+  Object.freeze(productWithTrustData.reviews.items);
+  Object.freeze(productWithTrustData.reviews.distribution);
+  Object.freeze(productWithTrustData.reviews);
+  return Object.freeze(productWithTrustData);
 }
 
 export const PRODUCTS: readonly Product[] = Object.freeze([

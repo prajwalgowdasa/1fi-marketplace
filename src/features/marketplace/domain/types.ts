@@ -13,6 +13,35 @@ export type ProductVariant = {
   stockStatus: "in_stock" | "out_of_stock";
 };
 
+export type Rating = 1 | 2 | 3 | 4 | 5;
+
+export type RatingDistribution = Record<"1" | "2" | "3" | "4" | "5", number>;
+
+export type ProductCommerce = {
+  seller: string;
+  deliveryEstimate: string;
+  warranty: string;
+  returns: string;
+};
+
+export type ProductReview = {
+  id: string;
+  reviewer: string;
+  rating: Rating;
+  date: string;
+  title: string;
+  body: string;
+  helpfulCount: number;
+  verifiedPurchase: true;
+};
+
+export type ProductReviewSummary = {
+  average: number;
+  totalCount: number;
+  distribution: RatingDistribution;
+  items: ProductReview[];
+};
+
 export type Product = {
   id: string;
   slug: string;
@@ -25,6 +54,8 @@ export type Product = {
   originalPricePaise?: number;
   variants: ProductVariant[];
   eligibleTenures: number[];
+  commerce: ProductCommerce;
+  reviews: ProductReviewSummary;
 };
 
 export type EmiPlan = {
