@@ -28,12 +28,30 @@ const ratingSchema = z
   .max(5)
   .transform((rating): Rating => rating as Rating);
 
+function isRealIsoCalendarDate(value: string): boolean {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return false;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+  return month >= 1 && month <= 12 && day >= 1 && day <= daysInMonth[month - 1]!;
+}
+
+const reviewDateSchema = z
+  .string()
+  .trim()
+  .refine(isRealIsoCalendarDate, "Review date must be a real ISO calendar date.");
+
 const reviewSchema = z
   .object({
     id: z.string().trim().min(1).max(100),
     reviewer: z.string().trim().min(1).max(100),
     rating: ratingSchema,
-    date: z.string().trim().min(1).max(20),
+    date: reviewDateSchema,
     title: z.string().trim().min(1).max(160),
     body: z.string().trim().min(1).max(1_000),
     helpfulCount: z.number().int().nonnegative(),
@@ -68,6 +86,21 @@ const reviewSummarySchema = z
         path: ["distribution"],
         message: "Rating distribution cannot exceed total reviews.",
       });
+    }
+    if (distributionTotal === summary.totalCount && summary.totalCount > 0) {
+      const weightedTotal = Object.entries(summary.distribution).reduce(
+        (sum, [rating, count]) => sum + Number(rating) * count,
+        0,
+      );
+      const aggregateAverage = Number((weightedTotal / summary.totalCount).toFixed(1));
+      const displayedAverage = Number(summary.average.toFixed(1));
+      if (aggregateAverage !== displayedAverage) {
+        context.addIssue({
+          code: "custom",
+          path: ["average"],
+          message: "Average must match the rounded rating distribution.",
+        });
+      }
     }
   });
 

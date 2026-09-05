@@ -29,7 +29,7 @@ export function PurchaseConfidence({ commerce }: PurchaseConfidenceProps) {
           <dd className="text-right font-medium text-[var(--ink-900)]">{commerce.returns}</dd>
         </div>
       </dl>
-      <p className="mt-4 border-t border-[var(--line)] pt-4 text-sm leading-6 text-[var(--ink-500)]">The merchant handles product availability, delivery, quality, warranty, cancellations and refunds. 1Fi enables the financing journey.</p>
+      <p className="mt-4 border-t border-[var(--line)] pt-4 text-sm leading-6 text-[var(--ink-500)]">The merchant handles product descriptions, availability, delivery, quality, warranty, cancellations and refunds. 1Fi enables the financing journey.</p>
     </section>
   );
 }

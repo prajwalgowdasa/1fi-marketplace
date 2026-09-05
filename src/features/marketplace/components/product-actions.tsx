@@ -18,8 +18,14 @@ export function ProductActions({ productId, productName, shareUrl }: ProductActi
   const saveLabel = active ? `Remove ${productName} from saved products` : `Save ${productName}`;
 
   function handleSave() {
-    toggle();
-    setStatusMessage(active ? "Removed from your products" : "Saved to your products");
+    const result = toggle();
+    if (!result.active) {
+      setStatusMessage("Removed from saved products.");
+    } else if (!result.persistenceAvailable) {
+      setStatusMessage("Saved for this visit only; browser storage is unavailable.");
+    } else {
+      setStatusMessage("Saved to your products");
+    }
   }
 
   async function handleShare() {

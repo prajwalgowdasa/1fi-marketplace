@@ -24,7 +24,7 @@ export function ReviewCard({ review, helpful, onToggleHelpful }: ReviewCardProps
     <article className="rounded-2xl border border-[var(--line)] bg-white p-4">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="font-medium text-[var(--ink-900)]">{review.reviewer}</span>
-        <span className="text-sm font-medium text-[var(--brand-700)]">Verified purchase</span>
+        <span className="text-sm font-medium text-[var(--brand-700)]">Verified purchase (demo fixture)</span>
         <time className="text-sm text-[var(--ink-500)]" dateTime={review.date}>{formatReviewDate(review.date)}</time>
       </div>
       <div className="mt-3 flex items-center gap-2">

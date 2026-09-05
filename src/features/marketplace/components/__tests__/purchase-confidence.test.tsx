@@ -26,6 +26,6 @@ describe("PurchaseConfidence", () => {
     expect(screen.getByText(commerce.warranty)).toBeVisible();
     expect(screen.getByText("Returns")).toBeVisible();
     expect(screen.getByText(commerce.returns)).toBeVisible();
-    expect(screen.getByText("The merchant handles product availability, delivery, quality, warranty, cancellations and refunds. 1Fi enables the financing journey.")).toBeVisible();
+    expect(screen.getByText("The merchant handles product descriptions, availability, delivery, quality, warranty, cancellations and refunds. 1Fi enables the financing journey.")).toBeVisible();
   });
 });

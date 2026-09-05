@@ -14,7 +14,7 @@ function createReviewSummary(productId: string, productName: string): ProductRev
   return {
     average: 4.6,
     totalCount: 128,
-    distribution: { "1": 2, "2": 3, "3": 9, "4": 28, "5": 86 },
+    distribution: { "1": 2, "2": 3, "3": 9, "4": 22, "5": 92 },
     items: [
       { id: `${productId}-review-1`, reviewer: "Aarav M.", rating: 5, date: "2026-08-18", title: "Reliable for everyday use", body: `${productName} has felt responsive and dependable in daily use. The configuration matched the listing.`, helpfulCount: 24, verifiedPurchase: true },
       { id: `${productId}-review-2`, reviewer: "Meera S.", rating: 4, date: "2026-08-09", title: "Good overall experience", body: "The product arrived as described and setup was straightforward. Packaging and included accessories were in good condition.", helpfulCount: 15, verifiedPurchase: true },

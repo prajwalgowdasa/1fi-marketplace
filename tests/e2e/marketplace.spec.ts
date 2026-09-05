@@ -65,6 +65,7 @@ test("supports trust-first product decisions", async ({ page }, testInfo) => {
 
   await page.getByRole("link", { name: "4.6 · 128 reviews" }).click();
   await expect(page).toHaveURL(/#product-reviews$/);
+  await expect(page.getByRole("heading", { name: "Customer reviews" })).toBeFocused();
 
   const firstHelpful = page.getByRole("button", { name: /^Helpful/ }).first();
   await expect(firstHelpful).toHaveText("Helpful (24)");
@@ -77,6 +78,32 @@ test("supports trust-first product decisions", async ({ page }, testInfo) => {
   await page.getByRole("radio", { name: /12 months/ }).check();
   await page.getByRole("button", { name: /Proceed with ₹6,658.33 per month/ }).click();
   await expect(page.getByRole("heading", { name: "Plan selected!" })).toBeVisible();
+});
+
+test("copies the product link when native Share is unavailable", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "share", {
+      configurable: true,
+      value: undefined,
+    });
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: async (text: string) => {
+          (window as typeof window & { __copiedProductUrl?: string }).__copiedProductUrl = text;
+        },
+      },
+    });
+  });
+  await page.goto("/shop/marketplace/iphone-17");
+  const currentUrl = page.url();
+
+  await page.getByRole("button", { name: "Share iPhone 17" }).click();
+
+  await expect(page.getByRole("status")).toHaveText("Product link copied");
+  await expect.poll(() => page.evaluate(() => (
+    window as typeof window & { __copiedProductUrl?: string }
+  ).__copiedProductUrl)).toBe(currentUrl);
 });
 
 test("filters the catalog and recovers from an empty search", async ({ page }) => {

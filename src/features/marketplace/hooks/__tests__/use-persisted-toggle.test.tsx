@@ -37,6 +37,22 @@ describe("persisted marketplace preferences", () => {
     expect(result.current.active).toBe(true);
   });
 
+  it("applies a pre-hydration toggle's visible target state to the latest stored set", () => {
+    vi.useFakeTimers();
+    localStorage.setItem(HELPFUL_REVIEWS_KEY, '["review-42"]');
+
+    const { result } = renderHook(() => useHelpfulReview("review-42"));
+    expect(result.current.active).toBe(false);
+
+    act(() => result.current.toggle());
+
+    expect(result.current.active).toBe(true);
+    expect(localStorage.getItem(HELPFUL_REVIEWS_KEY)).toBe('["review-42"]');
+
+    act(() => vi.runAllTimers());
+    expect(result.current.active).toBe(true);
+  });
+
   it("keeps a failed pre-hydration toggle active after the hydration timer", () => {
     vi.useFakeTimers();
     const setItem = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {

@@ -12,8 +12,12 @@ describe("AffordabilityCard", () => {
 
     expect(screen.getByRole("heading", { name: "Pay smarter with 1Fi" })).toBeVisible();
     expect(screen.getByText("From ₹3,329.16/month")).toBeVisible();
+    expect(screen.getByText("24 months")).toBeVisible();
     expect(screen.getByText("0% interest")).toBeVisible();
     expect(screen.getByText("Total payable ₹79,900")).toBeVisible();
+    expect(screen.getByText("Eligible units stay invested")).toBeVisible();
+    expect(screen.getByText("Selected eligible units may be lien-marked")).toBeVisible();
+    expect(screen.getByText("Limit depends on eligible holdings and lender approval")).toBeVisible();
     expect(screen.getByText("How 1Fi financing works")).toBeVisible();
   });
 
@@ -23,8 +27,8 @@ describe("AffordabilityCard", () => {
 
     await user.click(screen.getByText("How 1Fi financing works"));
 
-    expect(screen.getByText(/eligible units stay invested while selected units may be lien-marked/i)).toBeVisible();
-    expect(screen.getByText(/lender approval and eligible holdings/i)).toBeVisible();
+    expect(screen.getByText(/monthly repayments are due throughout the selected 24-month tenure/i)).toBeVisible();
+    expect(screen.getByText(/loan-to-value \(LTV\) ratio/i)).toBeVisible();
     expect(screen.getByText(/falling market value can require more collateral or partial repayment/i)).toBeVisible();
   });
 });

@@ -18,6 +18,10 @@ export function AffordabilityCard({ pricePaise, tenureMonths }: AffordabilityCar
           <dd className="font-semibold text-[var(--ink-900)]">From {formatInr(plan.regularInstallmentPaise)}/month</dd>
         </div>
         <div className="flex items-baseline justify-between gap-4">
+          <dt className="text-sm text-[var(--ink-500)]">Tenure</dt>
+          <dd className="font-semibold text-[var(--ink-900)]">{tenureMonths} months</dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-4">
           <dt className="text-sm text-[var(--ink-500)]">Interest</dt>
           <dd className="font-semibold text-[var(--ink-900)]">{plan.interestRatePercent}% interest</dd>
         </div>
@@ -26,10 +30,15 @@ export function AffordabilityCard({ pricePaise, tenureMonths }: AffordabilityCar
           <dd className="font-semibold text-[var(--ink-900)]">Total payable {formatInr(plan.totalPayablePaise)}</dd>
         </div>
       </dl>
+      <ul className="mt-4 space-y-2 rounded-xl bg-[var(--brand-050)] p-3 text-sm leading-6 text-[var(--ink-900)]">
+        <li>Eligible units stay invested</li>
+        <li>Selected eligible units may be lien-marked</li>
+        <li>Limit depends on eligible holdings and lender approval</li>
+      </ul>
       <details className="mt-4 border-t border-[var(--line)] pt-4 text-sm leading-6 text-[var(--ink-500)]">
         <summary className="cursor-pointer font-semibold text-[var(--ink-900)]">How 1Fi financing works</summary>
-        <p className="mt-3">Eligible units stay invested while selected units may be lien-marked for the financing period. Your limit depends on lender approval and eligible holdings.</p>
-        <p className="mt-2">Falling market value can require more collateral or partial repayment.</p>
+        <p className="mt-3">Monthly repayments are due throughout the selected {tenureMonths}-month tenure, even though eligible units stay invested.</p>
+        <p className="mt-2">The lender monitors the loan-to-value (LTV) ratio. Falling market value can require more collateral or partial repayment.</p>
       </details>
     </section>
   );

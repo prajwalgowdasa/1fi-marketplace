@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -24,6 +24,36 @@ describe("ProductActions", () => {
 
     expect(screen.getByRole("button", { name: "Remove iPhone 17 from saved products" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("status")).toHaveTextContent("Saved to your products");
+
+    await user.click(screen.getByRole("button", { name: "Remove iPhone 17 from saved products" }));
+    expect(screen.getByRole("status")).toHaveTextContent("Removed from saved products.");
+  });
+
+  it("announces that a saved choice is active only for this visit when writing storage fails", async () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("storage quota exceeded");
+    });
+    const user = userEvent.setup();
+    render(<ProductActions productId="iphone-17" productName="iPhone 17" />);
+
+    await user.click(screen.getByRole("button", { name: "Save iPhone 17" }));
+
+    expect(screen.getByRole("button", { name: "Remove iPhone 17 from saved products" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("status")).toHaveTextContent("Saved for this visit only; browser storage is unavailable.");
+  });
+
+  it("announces that a saved choice is active only for this visit when reading storage fails", async () => {
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("storage disabled");
+    });
+    const user = userEvent.setup();
+    render(<ProductActions productId="iphone-17" productName="iPhone 17" />);
+
+    await waitFor(() => expect(Storage.prototype.getItem).toHaveBeenCalled());
+    await user.click(screen.getByRole("button", { name: "Save iPhone 17" }));
+
+    expect(screen.getByRole("button", { name: "Remove iPhone 17 from saved products" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("status")).toHaveTextContent("Saved for this visit only; browser storage is unavailable.");
   });
 
   it.each([

@@ -63,6 +63,33 @@ describe("marketplace schemas", () => {
     expect(productSchema.safeParse(invalidRating).success).toBe(false);
   });
 
+  it("rejects review dates that are not real ISO calendar dates", () => {
+    const invalidDate = structuredClone(PRODUCTS[0]!);
+    invalidDate.reviews.items[0]!.date = "2026-02-30";
+
+    expect(productSchema.safeParse(invalidDate).success).toBe(false);
+  });
+
+  it("keeps fixture averages equal to the rounded complete rating distribution", () => {
+    for (const product of PRODUCTS) {
+      const { distribution, totalCount } = product.reviews;
+      const weightedTotal = Object.entries(distribution).reduce(
+        (sum, [rating, count]) => sum + Number(rating) * count,
+        0,
+      );
+
+      expect(Object.values(distribution).reduce((sum, count) => sum + count, 0)).toBe(totalCount);
+      expect(Number((weightedTotal / totalCount).toFixed(1))).toBe(product.reviews.average);
+    }
+  });
+
+  it("rejects an average that disagrees with a complete rating distribution", () => {
+    const inconsistentAverage = structuredClone(PRODUCTS[0]!);
+    inconsistentAverage.reviews.average = 4.5;
+
+    expect(productSchema.safeParse(inconsistentAverage).success).toBe(false);
+  });
+
   it("rejects review distributions that exceed the total review count", () => {
     const invalidDistribution = structuredClone(PRODUCTS[0]!);
     invalidDistribution.reviews.totalCount = 2;

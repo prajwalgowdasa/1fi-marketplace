@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
-import type { ProductReview, ProductReviewSummary, Rating } from "../domain/types";
-import { useHelpfulReview } from "../hooks/use-helpful-reviews";
+import type { ProductReviewSummary, Rating } from "../domain/types";
+import { useHelpfulReviews } from "../hooks/use-helpful-reviews";
 
 import { RatingStars } from "./rating-stars";
 import { ReviewCard } from "./review-card";
@@ -12,35 +12,20 @@ type ProductReviewsProps = {
   reviews: ProductReviewSummary;
 };
 
-type PersistedReviewCardProps = {
-  review: ProductReview;
-  onPersistenceUnavailable: () => void;
-};
-
-function PersistedReviewCard({ review, onPersistenceUnavailable }: PersistedReviewCardProps) {
-  const { active, persistenceAvailable, toggle } = useHelpfulReview(review.id);
-  const hasVoted = useRef(false);
-
-  useEffect(() => {
-    if (hasVoted.current && !persistenceAvailable) onPersistenceUnavailable();
-  }, [onPersistenceUnavailable, persistenceAvailable]);
-
-  function handleToggleHelpful() {
-    hasVoted.current = true;
-    toggle();
-  }
-
-  return <ReviewCard helpful={active} onToggleHelpful={handleToggleHelpful} review={review} />;
-}
-
 export function ProductReviews({ reviews }: ProductReviewsProps) {
   const [persistenceUnavailable, setPersistenceUnavailable] = useState(false);
-  const showPersistenceUnavailable = useCallback(() => setPersistenceUnavailable(true), []);
+  const { activeIds, toggle } = useHelpfulReviews();
   const ratings: readonly Rating[] = [5, 4, 3, 2, 1];
+
+  function handleToggleHelpful(reviewId: string) {
+    const result = toggle(reviewId);
+    if (!result.persistenceAvailable) setPersistenceUnavailable(true);
+  }
 
   return (
     <section aria-labelledby="product-reviews" className="rounded-3xl border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-card)]">
-      <h2 className="text-lg font-semibold text-[var(--ink-900)]" id="product-reviews">Customer reviews</h2>
+      <h2 className="text-lg font-semibold text-[var(--ink-900)]" id="product-reviews" tabIndex={-1}>Customer reviews</h2>
+      <p className="mt-2 text-sm leading-6 text-[var(--ink-500)]">Curated, read-only demo reviews. “Verified purchase” is fixture metadata, not live purchase verification. Helpful choices stay in this browser.</p>
       <div className="mt-4 grid gap-5 sm:grid-cols-[auto_1fr] sm:items-center">
         <div>
           <p className="text-3xl font-semibold text-[var(--ink-900)]">{reviews.average.toFixed(1)} out of 5</p>
@@ -74,7 +59,12 @@ export function ProductReviews({ reviews }: ProductReviewsProps) {
       {persistenceUnavailable ? <p className="mt-4 text-sm text-[var(--ink-500)]" role="status">Your vote is active for this visit but could not be saved.</p> : null}
       <div className="mt-6 space-y-4">
         {reviews.items.map((review) => (
-          <PersistedReviewCard key={review.id} onPersistenceUnavailable={showPersistenceUnavailable} review={review} />
+          <ReviewCard
+            helpful={activeIds.has(review.id)}
+            key={review.id}
+            onToggleHelpful={() => handleToggleHelpful(review.id)}
+            review={review}
+          />
         ))}
       </div>
     </section>
