@@ -128,6 +128,17 @@ test("filters the catalog and recovers from an empty search", async ({ page }) =
   await expect(page.getByRole("button", { name: "All" })).toHaveAttribute("aria-pressed", "true");
 });
 
+test("keeps category pills scrollable without showing a scrollbar", async ({ page }) => {
+  await page.goto(marketplaceUrl);
+  const categories = page.getByRole("group", { name: "Product categories" });
+
+  await expect(categories).toHaveCSS("overflow-x", "auto");
+  await expect.poll(() => categories.evaluate((element) => ({
+    standard: window.getComputedStyle(element).scrollbarWidth,
+    webkit: window.getComputedStyle(element, "::-webkit-scrollbar").display,
+  }))).toEqual({ standard: "none", webkit: "none" });
+});
+
 test("recovers from a missing product", async ({ page }) => {
   await page.goto("/shop/marketplace/not-a-product");
   await expect(page.getByRole("heading", { name: "Product not found" })).toBeVisible();

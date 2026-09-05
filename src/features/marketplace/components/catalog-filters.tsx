@@ -30,7 +30,7 @@ export function CatalogFilters({ searchText, category, onSearchTextChange, onCat
           value={searchText}
         />
       </label>
-      <div aria-label="Product categories" className="flex gap-2 overflow-x-auto pb-1" role="group">
+      <div aria-label="Product categories" className="scrollbar-hidden flex gap-2 overflow-x-auto pb-1" role="group">
         {categories.map((item) => {
           const selected = item.value === category;
           return (
