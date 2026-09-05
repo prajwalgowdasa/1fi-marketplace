@@ -89,8 +89,8 @@ describe("ProductExperience", () => {
     expect(screen.getByText("Total payable ₹89,900")).toBeVisible();
 
     const action = screen.getByRole("button", { name: "View EMI plans" });
-    const actionBar = action.parentElement;
-    expect(actionBar?.parentElement?.lastElementChild).toBe(actionBar);
+    expect(action.parentElement?.lastElementChild).toBe(action);
+    expect(action).toHaveClass("sticky", "bottom-20", "shadow-[var(--shadow-float)]");
 
     await user.click(action);
     expect(screen.getByRole("heading", { name: "Choose your EMI plan" })).toBeVisible();
@@ -100,9 +100,9 @@ describe("ProductExperience", () => {
     render(<ProductExperience product={iphoneFixture} relatedProducts={[]} />);
 
     const reviewsHeading = screen.getByRole("heading", { name: "Customer reviews" });
-    const actionBar = screen.getByRole("button", { name: "View EMI plans" }).parentElement;
+    const action = screen.getByRole("button", { name: "View EMI plans" });
 
-    expect(actionBar?.previousElementSibling).toContainElement(reviewsHeading);
+    expect(action.previousElementSibling).toContainElement(reviewsHeading);
   });
 
   it("returns from the EMI stage with the variant selection preserved", async () => {

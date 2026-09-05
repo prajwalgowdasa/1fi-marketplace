@@ -52,9 +52,14 @@ export function EmiSelection({ onBack, onSubmit, product, variant }: EmiSelectio
         </fieldset>
         {selectedPlan && <div className="mt-6"><PaymentBreakdown plan={selectedPlan} pricePaise={variant.pricePaise} /></div>}
         {error && <p aria-live="polite" className="mt-4 text-sm text-red-700" role="alert">{error}</p>}
-        <div className="sticky bottom-20 z-10 -mx-4 mt-6 border-t border-[var(--line)] bg-white/95 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur">
-          <button className="min-h-12 w-full rounded-2xl bg-[var(--brand-500)] px-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45" disabled={!selectedPlan || isPending} onClick={submit} type="button">{isPending ? "Submitting plan" : ctaLabel}</button>
-        </div>
+        <button
+          className="sticky bottom-20 z-10 mt-6 min-h-12 w-full rounded-2xl bg-[var(--brand-500)] px-4 text-sm font-semibold text-white shadow-[var(--shadow-float)] disabled:cursor-not-allowed disabled:opacity-45"
+          disabled={!selectedPlan || isPending}
+          onClick={submit}
+          type="button"
+        >
+          {isPending ? "Submitting plan" : ctaLabel}
+        </button>
       </section>
     </>
   );

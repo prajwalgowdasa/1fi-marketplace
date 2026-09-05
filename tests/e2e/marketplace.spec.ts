@@ -164,6 +164,21 @@ test("supports keyboard navigation for Shop tabs and EMI choices", async ({ page
   await expect(page.getByRole("radio", { name: /12 months/ })).toBeChecked();
 });
 
+test("keeps only the checkout buttons sticky above the bottom navigation", async ({ page }) => {
+  await openIphoneConfiguration(page);
+
+  const viewPlans = page.getByRole("button", { name: "View EMI plans" });
+  await expect(viewPlans).toHaveCSS("position", "sticky");
+  await expect(viewPlans).not.toHaveCSS("box-shadow", "none");
+  await expect(viewPlans.locator("xpath=..")).not.toHaveCSS("backdrop-filter", /blur/);
+
+  await viewPlans.click();
+  const proceed = page.getByRole("button", { name: "Proceed" });
+  await expect(proceed).toHaveCSS("position", "sticky");
+  await expect(proceed).not.toHaveCSS("box-shadow", "none");
+  await expect(proceed.locator("xpath=..")).not.toHaveCSS("backdrop-filter", /blur/);
+});
+
 test("captures the assignment walkthrough at the mobile submission viewport", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile-chrome", "Submission captures use the 390 by 844 mobile project.");
   await page.emulateMedia({ reducedMotion: "reduce" });

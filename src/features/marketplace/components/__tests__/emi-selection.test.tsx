@@ -19,6 +19,8 @@ describe("EmiSelection", () => {
 
     const action = screen.getByRole("button", { name: /Proceed/ });
     expect(action).toBeDisabled();
+    expect(action.parentElement?.lastElementChild).toBe(action);
+    expect(action).toHaveClass("sticky", "bottom-20", "shadow-[var(--shadow-float)]");
 
     await user.click(screen.getByRole("radio", { name: /12 months/ }));
 
