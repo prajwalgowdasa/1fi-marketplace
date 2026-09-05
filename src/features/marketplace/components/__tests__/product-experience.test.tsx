@@ -2,7 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { PRODUCTS } from "../../data/products";
+import { PRODUCTS, toProductSummary } from "../../data/products";
 import { ApiClientError } from "@/shared/lib/api-client";
 import { DetailHeader, ProductDetailContent, ProductExperience } from "../product-experience";
 import { useProduct } from "../../hooks/use-product";
@@ -14,6 +14,9 @@ vi.mock("../../hooks/use-create-order", () => ({ useCreateOrder: () => ({ mutate
 vi.mock("next/navigation", () => ({ ...navigationMock, useRouter: () => ({ push: navigationMock.push }) }));
 
 const iphoneFixture = PRODUCTS.find(({ id }) => id === "iphone-17")!;
+const relatedFixtures = ["iphone-17", "pixel-10", "galaxy-s25-ultra", "oneplus-15"].map(
+  (productId) => toProductSummary(PRODUCTS.find(({ id }) => id === productId)!),
+);
 
 afterEach(cleanup);
 
@@ -55,6 +58,43 @@ describe("ProductExperience", () => {
     expect(screen.getByText("₹89,900")).toBeVisible();
   });
 
+  it("composes trust sections in order and preserves the selection-to-EMI journey", async () => {
+    const user = userEvent.setup();
+    render(<ProductExperience product={iphoneFixture} relatedProducts={relatedFixtures} />);
+
+    const sectionHeadings = [
+      "iPhone 17",
+      "Pay smarter with 1Fi",
+      "Highlights",
+      "Purchase confidence",
+      "Customer reviews",
+      "You may also like",
+    ].map((name) => screen.getByRole("heading", { name }));
+
+    sectionHeadings.slice(1).forEach((heading, index) => {
+      const position = sectionHeadings[index]!.compareDocumentPosition(heading);
+      expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+
+    expect(screen.getByRole("link", { name: "4.6 · 128 reviews" })).toHaveAttribute(
+      "href",
+      "#product-reviews",
+    );
+    expect(screen.queryByRole("link", { name: "Apple iPhone 17" })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("radio", { name: "256 GB" }));
+    await user.click(screen.getByRole("radio", { name: "Black" }));
+
+    expect(screen.getByText("Total payable ₹89,900")).toBeVisible();
+
+    const action = screen.getByRole("button", { name: "View EMI plans" });
+    const actionBar = action.parentElement;
+    expect(actionBar?.parentElement?.lastElementChild).toBe(actionBar);
+
+    await user.click(action);
+    expect(screen.getByRole("heading", { name: "Choose your EMI plan" })).toBeVisible();
+  });
+
   it("returns from the EMI stage with the variant selection preserved", async () => {
     const user = userEvent.setup();
     render(<ProductExperience product={iphoneFixture} />);
@@ -79,10 +119,17 @@ describe("ProductExperience", () => {
   });
 
   it("renders product data returned by the detail query", () => {
-    vi.mocked(useProduct).mockReturnValue({ status: "success", data: { data: iphoneFixture } } as ReturnType<typeof useProduct>);
+    vi.mocked(useProduct).mockReturnValue({
+      status: "success",
+      data: { data: iphoneFixture, related: relatedFixtures.slice(1) },
+    } as ReturnType<typeof useProduct>);
     render(<ProductDetailContent productId="iphone-17" />);
 
     expect(screen.getByRole("heading", { name: "iPhone 17" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Google Pixel 10" })).toHaveAttribute(
+      "href",
+      "/shop/marketplace/pixel-10",
+    );
     expect(useProduct).toHaveBeenCalledWith("iphone-17");
   });
 

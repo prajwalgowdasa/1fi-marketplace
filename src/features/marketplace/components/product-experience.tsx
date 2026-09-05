@@ -3,7 +3,7 @@
 import { notFound, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
-import type { Product, ProductVariant } from "../domain/types";
+import type { Product, ProductSummary as ProductSummaryData, ProductVariant } from "../domain/types";
 import { resolveVariant } from "../domain/variants";
 import { useProduct } from "../hooks/use-product";
 import { useCreateOrder } from "../hooks/use-create-order";
@@ -14,17 +14,34 @@ import { Skeleton } from "@/shared/components/skeleton";
 import { ProductFeatures } from "./product-features";
 import { ProductGallery } from "./product-gallery";
 import { ProductSummary } from "./product-summary";
+import { AffordabilityCard } from "./affordability-card";
+import { ProductReviews } from "./product-reviews";
+import { PurchaseConfidence } from "./purchase-confidence";
+import { RelatedProducts } from "./related-products";
 import { StickyActionBar } from "./sticky-action-bar";
 import { type VariantSelection, VariantSelector } from "./variant-selector";
 import { EmiSelection } from "./emi-selection";
 
-export function ProductExperience({ product }: { product: Product }) {
+export function ProductExperience({
+  product,
+  relatedProducts = [],
+}: {
+  product: Product;
+  relatedProducts?: ProductSummaryData[];
+}) {
   const [selection, setSelection] = useState<VariantSelection>({});
   const [stage, setStage] = useState<"details" | "emi">("details");
   const router = useRouter();
   const createOrder = useCreateOrder();
   const attributes = useMemo(() => new Set(product.variants.flatMap((variant) => Object.keys(variant.attributes))), [product]);
   const selectedVariant: ProductVariant | undefined = selection && Object.keys(selection).length === attributes.size ? resolveVariant(product, selection) : undefined;
+  const displayedPricePaise = selectedVariant?.pricePaise ?? Math.min(
+    ...product.variants
+      .filter(({ stockStatus }) => stockStatus === "in_stock")
+      .map(({ pricePaise }) => pricePaise),
+  );
+  const longestTenure = Math.max(...product.eligibleTenures);
+  const recommendations = relatedProducts.filter(({ id }) => id !== product.id);
 
   if (stage === "emi" && selectedVariant) {
     return (
@@ -47,8 +64,12 @@ export function ProductExperience({ product }: { product: Product }) {
       <div className="px-4 py-6">
         <ProductGallery images={product.images} />
         <div className="mt-6"><ProductSummary product={product} variant={selectedVariant} /></div>
+        <div className="mt-7"><AffordabilityCard pricePaise={displayedPricePaise} tenureMonths={longestTenure} /></div>
         <div className="mt-7"><VariantSelector onChange={setSelection} product={product} value={selection} /></div>
         <div className="mt-7"><ProductFeatures features={product.features} /></div>
+        <div className="mt-7"><PurchaseConfidence commerce={product.commerce} /></div>
+        <div className="mt-7"><ProductReviews reviews={product.reviews} /></div>
+        <div className="mt-7"><RelatedProducts products={recommendations} /></div>
         <StickyActionBar disabled={!selectedVariant} onClick={() => setStage("emi")} />
       </div>
     </>
@@ -67,7 +88,12 @@ export function ProductDetailContent({ productId }: { productId: string }) {
     return <><DetailHeader /><div className="py-6"><ErrorState onRetry={() => product.refetch()} /></div></>;
   }
 
-  return <ProductExperience product={product.data.data} />;
+  return (
+    <ProductExperience
+      product={product.data.data}
+      relatedProducts={product.data.related}
+    />
+  );
 }
 
 export function DetailHeader() {
