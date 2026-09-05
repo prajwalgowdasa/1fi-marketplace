@@ -23,8 +23,12 @@ export function usePersistedToggle(storageKey: string, itemId: string): Persiste
   const [storedIds, setStoredIds] = useState<Set<string>>(() => new Set());
   const [persistenceAvailable, setPersistenceAvailable] = useState(true);
   const storedIdsRef = useRef(storedIds);
+  const hydratedStorageKeyRef = useRef<string | null>(null);
 
   const hydrate = useCallback(() => {
+    if (hydratedStorageKeyRef.current === storageKey) return;
+    hydratedStorageKeyRef.current = storageKey;
+
     try {
       const nextStoredIds = parseStoredIds(localStorage.getItem(storageKey));
       storedIdsRef.current = nextStoredIds;
@@ -44,6 +48,8 @@ export function usePersistedToggle(storageKey: string, itemId: string): Persiste
   }, [hydrate]);
 
   const toggle = useCallback(() => {
+    hydrate();
+
     const nextStoredIds = new Set(storedIdsRef.current);
     if (nextStoredIds.has(itemId)) nextStoredIds.delete(itemId);
     else nextStoredIds.add(itemId);
@@ -57,7 +63,7 @@ export function usePersistedToggle(storageKey: string, itemId: string): Persiste
     } catch {
       setPersistenceAvailable(false);
     }
-  }, [itemId, storageKey]);
+  }, [hydrate, itemId, storageKey]);
 
   return {
     active: storedIds.has(itemId),

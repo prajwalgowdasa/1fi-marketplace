@@ -22,6 +22,39 @@ describe("persisted marketplace preferences", () => {
     expect(result.current.active).toBe(true);
   });
 
+  it("preserves stored saved products when toggled before hydration", () => {
+    vi.useFakeTimers();
+    localStorage.setItem(SAVED_PRODUCTS_KEY, '["macbook-air"]');
+
+    const { result } = renderHook(() => useSavedProduct("iphone-17"));
+
+    act(() => result.current.toggle());
+
+    expect(result.current.active).toBe(true);
+    expect(JSON.parse(localStorage.getItem(SAVED_PRODUCTS_KEY)!)).toEqual(["iphone-17", "macbook-air"]);
+
+    act(() => vi.runAllTimers());
+    expect(result.current.active).toBe(true);
+  });
+
+  it("keeps a failed pre-hydration toggle active after the hydration timer", () => {
+    vi.useFakeTimers();
+    const setItem = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("storage quota exceeded");
+    });
+    const { result } = renderHook(() => useHelpfulReview("review-42"));
+
+    act(() => result.current.toggle());
+
+    expect(result.current.active).toBe(true);
+    expect(result.current.persistenceAvailable).toBe(false);
+    expect(setItem).toHaveBeenCalledWith(HELPFUL_REVIEWS_KEY, '["review-42"]');
+
+    act(() => vi.runAllTimers());
+    expect(result.current.active).toBe(true);
+    expect(result.current.persistenceAvailable).toBe(false);
+  });
+
   it("persists a saved product when toggled", async () => {
     const { result } = renderHook(() => useSavedProduct("iphone-17"));
 
