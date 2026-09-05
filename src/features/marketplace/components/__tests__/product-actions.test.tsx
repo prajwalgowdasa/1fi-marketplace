@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { shareProduct } from "../../lib/share-product";
+import { SAVED_PRODUCTS_KEY } from "../../hooks/use-saved-product";
 import { ProductActions } from "../product-actions";
 
 vi.mock("../../lib/share-product", () => ({ shareProduct: vi.fn() }));
@@ -27,6 +28,22 @@ describe("ProductActions", () => {
 
     await user.click(screen.getByRole("button", { name: "Remove iPhone 17 from saved products" }));
     expect(screen.getByRole("status")).toHaveTextContent("Removed from saved products.");
+  });
+
+  it("announces a visit-only removal when saved-product storage cannot be updated", async () => {
+    localStorage.setItem(SAVED_PRODUCTS_KEY, '["iphone-17"]');
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("storage quota exceeded");
+    });
+    const user = userEvent.setup();
+    render(<ProductActions productId="iphone-17" productName="iPhone 17" />);
+
+    const removeButton = await screen.findByRole("button", { name: "Remove iPhone 17 from saved products" });
+    await user.click(removeButton);
+
+    expect(screen.getByRole("button", { name: "Save iPhone 17" })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByRole("status")).toHaveTextContent("Removed for this visit, but saved products could not be updated in this browser.");
+    expect(localStorage.getItem(SAVED_PRODUCTS_KEY)).toBe('["iphone-17"]');
   });
 
   it("announces that a saved choice is active only for this visit when writing storage fails", async () => {

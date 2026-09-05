@@ -19,10 +19,12 @@ export function ProductActions({ productId, productName, shareUrl }: ProductActi
 
   function handleSave() {
     const result = toggle();
-    if (!result.active) {
+    if (!result.persistenceAvailable) {
+      setStatusMessage(result.active
+        ? "Saved for this visit only; browser storage is unavailable."
+        : "Removed for this visit, but saved products could not be updated in this browser.");
+    } else if (!result.active) {
       setStatusMessage("Removed from saved products.");
-    } else if (!result.persistenceAvailable) {
-      setStatusMessage("Saved for this visit only; browser storage is unavailable.");
     } else {
       setStatusMessage("Saved to your products");
     }
