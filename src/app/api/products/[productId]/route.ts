@@ -1,4 +1,5 @@
-import { getProduct } from "@/features/marketplace/server/catalog";
+import { productSchema } from "@/features/marketplace/domain/schemas";
+import { getProduct, listRelatedProducts } from "@/features/marketplace/server/catalog";
 
 const noStoreHeaders = { "Cache-Control": "no-store" };
 
@@ -21,7 +22,10 @@ export async function GET(
       );
     }
 
-    return json({ data: product });
+    return json({
+      data: productSchema.parse(product),
+      related: listRelatedProducts(product.id),
+    });
   } catch {
     return json({ error: { code: "INTERNAL_ERROR", message: "An unexpected error occurred." } }, 500);
   }

@@ -15,6 +15,11 @@ export type ProductRequestFilters = {
   category: ProductCategory | "all";
 };
 
+export type ProductDetailResponse = {
+  data: Product;
+  related: ProductSummary[];
+};
+
 export function fetchProducts(filters: ProductRequestFilters, signal?: AbortSignal): Promise<ProductsResponse> {
   const params = new URLSearchParams();
   const queryValue = filters.query.trim().slice(0, 80);
@@ -27,6 +32,9 @@ export function fetchProducts(filters: ProductRequestFilters, signal?: AbortSign
   );
 }
 
-export function fetchProduct(productId: string, signal?: AbortSignal): Promise<{ data: Product }> {
-  return requestJson<{ data: Product }>(`/api/products/${encodeURIComponent(productId)}`, signal ? { signal } : {});
+export function fetchProduct(productId: string, signal?: AbortSignal): Promise<ProductDetailResponse> {
+  return requestJson<ProductDetailResponse>(
+    `/api/products/${encodeURIComponent(productId)}`,
+    signal ? { signal } : {},
+  );
 }

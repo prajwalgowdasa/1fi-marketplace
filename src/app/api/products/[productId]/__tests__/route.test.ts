@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { productSchema } from "@/features/marketplace/domain/schemas";
+
 vi.mock("server-only", () => ({}));
 import { GET } from "../route";
 
@@ -11,7 +13,13 @@ describe("GET /api/products/[productId]", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("Cache-Control")).toBe("no-store");
-    expect(await response.json()).toMatchObject({ data: { id: "iphone-17", variants: expect.any(Array) } });
+    const body = await response.json();
+
+    expect(body).toMatchObject({ data: { id: "iphone-17", variants: expect.any(Array) } });
+    expect(productSchema.parse(body.data)).toMatchObject({ id: "iphone-17" });
+    expect(body.related).toHaveLength(3);
+    expect(body.related.every(({ category }: { category: string }) => category === "smartphones")).toBe(true);
+    expect(body.related.some(({ id }: { id: string }) => id === "iphone-17")).toBe(false);
   });
 
   it("returns a stable not-found error", async () => {
