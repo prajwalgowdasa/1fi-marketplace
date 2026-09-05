@@ -36,16 +36,47 @@ describe("ProductExperience", () => {
     expect(screen.queryByText("1Fi Shop")).not.toBeInTheDocument();
   });
 
-  it("keeps the action disabled until attributes resolve to an in-stock SKU", async () => {
+  it("guides the user through each missing option before opening EMI plans", async () => {
     const user = userEvent.setup();
-    render(<ProductExperience product={iphoneFixture} />);
-    const action = screen.getByRole("button", { name: "View EMI plans" });
+    const scrollIntoView = vi.fn();
+    const originalScrollIntoView = Element.prototype.scrollIntoView;
+    Object.defineProperty(Element.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
 
-    expect(action).toBeDisabled();
-    await user.click(screen.getByRole("radio", { name: "128 GB" }));
-    await user.click(screen.getByRole("radio", { name: "Black" }));
+    try {
+      render(<ProductExperience product={iphoneFixture} />);
+      const action = screen.getByRole("button", { name: "View EMI plans" });
 
-    expect(action).toBeEnabled();
+      expect(action).toBeEnabled();
+      await user.click(action);
+
+      expect(screen.getByRole("alert")).toHaveTextContent("Select a Storage option to continue.");
+      expect(screen.getByRole("radio", { name: "128 GB" })).toHaveFocus();
+      expect(scrollIntoView).toHaveBeenLastCalledWith({ behavior: "smooth", block: "center" });
+
+      await user.click(screen.getByRole("radio", { name: "128 GB" }));
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+
+      await user.click(action);
+      expect(screen.getByRole("alert")).toHaveTextContent("Select a Color option to continue.");
+      expect(screen.getByRole("radio", { name: "Black" })).toHaveFocus();
+
+      await user.click(screen.getByRole("radio", { name: "Black" }));
+      await user.click(action);
+
+      expect(screen.getByRole("heading", { name: "Choose your EMI plan" })).toBeVisible();
+    } finally {
+      if (originalScrollIntoView) {
+        Object.defineProperty(Element.prototype, "scrollIntoView", {
+          configurable: true,
+          value: originalScrollIntoView,
+        });
+      } else {
+        Reflect.deleteProperty(Element.prototype, "scrollIntoView");
+      }
+    }
   });
 
   it("updates the displayed price for the selected SKU", async () => {

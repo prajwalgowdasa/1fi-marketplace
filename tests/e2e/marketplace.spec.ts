@@ -164,6 +164,30 @@ test("supports keyboard navigation for Shop tabs and EMI choices", async ({ page
   await expect(page.getByRole("radio", { name: /12 months/ })).toBeChecked();
 });
 
+test("guides missing product options before entering EMI selection", async ({ page }) => {
+  await page.goto("/shop/marketplace/iphone-17");
+  const viewPlans = page.getByRole("button", { name: "View EMI plans" });
+  const storageError = page.getByRole("alert").filter({ hasText: "Select a Storage option to continue." });
+  const colorError = page.getByRole("alert").filter({ hasText: "Select a Color option to continue." });
+
+  await expect(viewPlans).toBeEnabled();
+  await viewPlans.click();
+  await expect(storageError).toHaveText("Select a Storage option to continue.");
+  await expect(page.getByRole("radio", { name: "128 GB" })).toBeFocused();
+  await expect(page.getByRole("radiogroup", { name: "Storage" })).toBeInViewport();
+
+  await page.locator("label").filter({ hasText: /^128 GB$/ }).click();
+  await expect(storageError).toHaveCount(0);
+  await viewPlans.click();
+  await expect(colorError).toHaveText("Select a Color option to continue.");
+  await expect(page.getByRole("radio", { name: "Black" })).toBeFocused();
+  await expect(page.getByRole("radiogroup", { name: "Color" })).toBeInViewport();
+
+  await page.locator("label").filter({ hasText: /^Black$/ }).click();
+  await viewPlans.click();
+  await expect(page.getByRole("heading", { name: "Choose your EMI plan" })).toBeVisible();
+});
+
 test("keeps only the checkout buttons sticky above the bottom navigation", async ({ page }) => {
   await openIphoneConfiguration(page);
 
