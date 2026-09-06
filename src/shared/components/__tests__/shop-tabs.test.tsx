@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import ShopPage from "@/app/shop/page";
 import { ShopTabs } from "../shop-tabs";
 
@@ -8,6 +8,8 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace: vi.fn() }),
   useSearchParams: () => new URLSearchParams("tab=marketplace"),
 }));
+
+afterEach(cleanup);
 
 describe("ShopTabs", () => {
   it("exposes three keyboard-operable Shop tabs", async () => {

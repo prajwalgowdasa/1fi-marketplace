@@ -10,7 +10,7 @@ This independent frontend assignment presents a mobile-first 1Fi Marketplace exp
 
 ## Implemented Flow
 
-Open Marketplace, search or filter the catalog, and use deterministic related-product suggestions to continue browsing. Product details include Share and locally saved-product actions, transparent affordability guidance, purchase-confidence facts, and curated demonstration reviews with local Helpful voting. Configure an in-stock product, choose an EMI tenure, and receive a reloadable mock confirmation.
+Open Marketplace, search or filter the catalog, and use deterministic related-product suggestions to continue browsing. Product details include Share and saved-product actions, with a dedicated Saved products screen for comparing and removing favourites. The flow also includes transparent affordability guidance, purchase-confidence facts, and curated demonstration reviews with local Helpful voting. Configure an in-stock product, choose an EMI tenure, and receive a reloadable mock confirmation.
 
 ## Screenshots
 

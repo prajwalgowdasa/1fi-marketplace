@@ -80,6 +80,30 @@ test("supports trust-first product decisions", async ({ page }, testInfo) => {
   await expect(page.getByRole("heading", { name: "Plan selected!" })).toBeVisible();
 });
 
+test("user can view and remove saved products", async ({ page }) => {
+  await page.goto("/shop/marketplace/iphone-17");
+  await page.getByRole("button", { name: "Save iPhone 17" }).click();
+  await page.getByRole("link", { name: "Back to Marketplace" }).click();
+
+  const savedProducts = page.getByRole("link", { name: "Saved products, 1 item" });
+  await expect(savedProducts).toBeVisible();
+  await savedProducts.click();
+
+  await expect(page).toHaveURL(/\/shop\/marketplace\/saved$/);
+  await expect(page.getByRole("heading", { name: "Saved products" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Apple.*iPhone 17/i })).toBeVisible();
+
+  await page.getByRole("button", { name: "Remove iPhone 17 from saved products" }).click();
+  await expect(page.getByRole("heading", { name: "No saved products yet" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Browse Marketplace" })).toHaveAttribute(
+    "href",
+    marketplaceUrl,
+  );
+
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "No saved products yet" })).toBeVisible();
+});
+
 test("copies the product link when native Share is unavailable", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "share", {

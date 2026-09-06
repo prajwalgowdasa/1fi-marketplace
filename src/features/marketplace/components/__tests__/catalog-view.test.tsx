@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { toProductSummary, PRODUCTS } from "@/features/marketplace/data/products";
+import { SAVED_PRODUCTS_KEY } from "@/features/marketplace/hooks/use-saved-product";
 import { useProducts } from "@/features/marketplace/hooks/use-products";
 
 vi.mock("@/features/marketplace/hooks/use-products", () => ({ useProducts: vi.fn() }));
@@ -31,6 +32,10 @@ function renderCatalog() {
 
 describe("CatalogView", () => {
   beforeEach(() => vi.clearAllMocks());
+  afterEach(() => {
+    cleanup();
+    localStorage.clear();
+  });
 
   it("renders three loading skeletons", () => {
     mockUseProducts.mockReturnValue({ status: "pending" } as ReturnType<typeof useProducts>);
@@ -48,6 +53,20 @@ describe("CatalogView", () => {
     const card = screen.getByRole("link", { name: /iPhone 17/i });
     expect(card).toHaveTextContent("₹79,900");
     expect(card).toHaveTextContent("From ₹3,329.16/month");
+  });
+
+  it("links to the saved-products screen with the persisted count", async () => {
+    localStorage.setItem(SAVED_PRODUCTS_KEY, '["iphone-17"]');
+    mockUseProducts.mockReturnValue({ status: "success", data: catalogFixture } as ReturnType<typeof useProducts>);
+
+    renderCatalog();
+
+    const savedProducts = await screen.findByRole("link", {
+      name: "Saved products, 1 item",
+    });
+    expect(savedProducts).toHaveAttribute("href", "/shop/marketplace/saved");
+    expect(savedProducts).toHaveTextContent("Saved");
+    expect(savedProducts).toHaveTextContent("1");
   });
 
   it("offers retry on request failure", async () => {
