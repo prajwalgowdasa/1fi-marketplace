@@ -14,7 +14,8 @@ describe("ProductCard", () => {
 
     const link = screen.getByRole("link", { name: /Apple.*iPhone 17/i });
     expect(link).toHaveAttribute("href", "/shop/marketplace/iphone-17");
-    expect(screen.getByRole("img", { name: product.images[0]!.alt }).getAttribute("src")).toContain("iphone-17.webp");
+    const imageSrc = screen.getByRole("img", { name: product.images[0]!.alt }).getAttribute("src") ?? "";
+    expect(decodeURIComponent(imageSrc)).toContain("/images/products/iphone-17/black.webp");
   });
 
   it("replaces a failed product image with the local placeholder", () => {

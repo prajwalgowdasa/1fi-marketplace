@@ -126,6 +126,7 @@ const productSchemaBase = z
         .object({
           src: z.string().trim().min(1).max(500),
           alt: z.string().trim().min(1).max(200),
+          color: z.string().trim().min(1).max(80).optional(),
         })
         .strict(),
     ),

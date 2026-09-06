@@ -1,3 +1,6 @@
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { PRODUCTS, toProductSummary } from "../../data/products";
@@ -48,6 +51,38 @@ describe("marketplace schemas", () => {
 
   it("accepts the product fixtures", () => {
     expect(PRODUCTS.every((product) => productSchema.safeParse(product).success)).toBe(true);
+  });
+
+  it("keeps catalogue imagery optimized, local, and organized by product", () => {
+    for (const product of PRODUCTS) {
+      expect(product.images.length).toBeGreaterThan(0);
+
+      for (const image of product.images) {
+        expect(image.src).toMatch(
+          new RegExp(`^/images/products/${product.slug}/[a-z0-9-]+\\.webp$`),
+        );
+        expect(existsSync(resolve(process.cwd(), "public", image.src.slice(1)))).toBe(true);
+      }
+    }
+
+    expect(PRODUCTS.find(({ id }) => id === "iphone-17")?.images.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("maps every product color option to a product image", () => {
+    for (const product of PRODUCTS) {
+      const colors = new Set(
+        product.variants
+          .map((variant) => variant.attributes.color)
+          .filter((color): color is string => Boolean(color)),
+      );
+
+      for (const color of colors) {
+        expect(
+          product.images.some((image) => image.color === color),
+          `${product.name} is missing imagery for ${color}`,
+        ).toBe(true);
+      }
+    }
   });
 
   it("keeps an absent optional original price absent after parsing", () => {

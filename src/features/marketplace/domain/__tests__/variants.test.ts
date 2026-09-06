@@ -15,6 +15,6 @@ describe("resolveVariant", () => {
   it("does not resolve an out-of-stock matching variant", () => {
     const product = PRODUCTS.find(({ id }) => id === "pixel-10")!;
 
-    expect(resolveVariant(product, { storage: "256 GB", color: "Porcelain" })).toBeUndefined();
+    expect(resolveVariant(product, { storage: "256 GB", color: "Frost" })).toBeUndefined();
   });
 });

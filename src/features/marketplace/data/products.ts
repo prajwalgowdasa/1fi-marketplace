@@ -56,12 +56,35 @@ export const PRODUCTS: readonly Product[] = Object.freeze([
     category: "smartphones",
     description:
       "iPhone 17 brings a bright everyday display and a camera system built for reliable photos. Its lightweight design keeps performance and battery life close at hand.",
-    images: [{ src: "/images/products/iphone-17.webp", alt: "Neutral black smartphone render" }],
+    images: [
+      {
+        src: "/images/products/iphone-17/black.webp",
+        alt: "Rear close-up of iPhone 17 in Black",
+        color: "Black",
+      },
+      {
+        src: "/images/products/iphone-17/mist-blue.webp",
+        alt: "Rear close-up of iPhone 17 in Mist Blue",
+        color: "Mist Blue",
+      },
+      {
+        src: "/images/products/iphone-17/front-and-back.webp",
+        alt: "Front and rear views of iPhone 17 in lavender",
+      },
+      {
+        src: "/images/products/iphone-17/color-lineup.webp",
+        alt: "iPhone 17 lineup in lavender, mist blue, black, white, and sage",
+      },
+      {
+        src: "/images/products/iphone-17/side-lineup.webp",
+        alt: "Side profiles of the iPhone 17 color lineup",
+      },
+    ],
     features: ["Advanced dual-camera system", "All-day battery life", "Bright edge-to-edge display"],
     variants: [
       { id: "iphone-17-128-black", sku: "IPH17-128-BLK", attributes: { storage: "128 GB", color: "Black" }, pricePaise: 7_990_000, stockStatus: "in_stock" },
       { id: "iphone-17-256-black", sku: "IPH17-256-BLK", attributes: { storage: "256 GB", color: "Black" }, pricePaise: 8_990_000, stockStatus: "in_stock" },
-      { id: "iphone-17-128-blue", sku: "IPH17-128-BLU", attributes: { storage: "128 GB", color: "Blue" }, pricePaise: 7_990_000, stockStatus: "in_stock" },
+      { id: "iphone-17-128-mist-blue", sku: "IPH17-128-MBL", attributes: { storage: "128 GB", color: "Mist Blue" }, pricePaise: 7_990_000, stockStatus: "in_stock" },
     ],
     eligibleTenures: [6, 12, 24],
   }),
@@ -73,11 +96,26 @@ export const PRODUCTS: readonly Product[] = Object.freeze([
     category: "smartphones",
     description:
       "Google Pixel 10 pairs a clean Android experience with an intelligent camera. It is tuned for quick everyday tasks and crisp photos in changing light.",
-    images: [{ src: "/images/products/pixel-10.webp", alt: "Neutral dark smartphone render" }],
+    images: [
+      {
+        src: "/images/products/pixel-10/obsidian.webp",
+        alt: "Rear view of Google Pixel 10 in Obsidian",
+        color: "Obsidian",
+      },
+      {
+        src: "/images/products/pixel-10/frost.webp",
+        alt: "Rear view of Google Pixel 10 in Frost",
+        color: "Frost",
+      },
+      {
+        src: "/images/products/pixel-10/indigo-in-use.webp",
+        alt: "Person using a blue Google Pixel 10 outdoors",
+      },
+    ],
     features: ["Google Tensor performance", "Adaptive battery", "Advanced Pixel camera"],
     variants: [
       { id: "pixel-10-128-obsidian", sku: "PXL10-128-OBS", attributes: { storage: "128 GB", color: "Obsidian" }, pricePaise: 6_999_900, stockStatus: "in_stock" },
-      { id: "pixel-10-256-porcelain", sku: "PXL10-256-POR", attributes: { storage: "256 GB", color: "Porcelain" }, pricePaise: 7_999_900, stockStatus: "out_of_stock" },
+      { id: "pixel-10-256-frost", sku: "PXL10-256-FRS", attributes: { storage: "256 GB", color: "Frost" }, pricePaise: 7_999_900, stockStatus: "out_of_stock" },
     ],
     eligibleTenures: [6, 12, 18],
   }),
@@ -89,7 +127,22 @@ export const PRODUCTS: readonly Product[] = Object.freeze([
     category: "smartphones",
     description:
       "Galaxy S25 Ultra combines a large premium screen with a versatile camera system. The built-in S Pen makes notes and precise edits feel natural.",
-    images: [{ src: "/images/products/galaxy-s25-ultra.webp", alt: "Neutral titanium smartphone render" }],
+    images: [
+      {
+        src: "/images/products/galaxy-s25-ultra/titanium-grey.webp",
+        alt: "Front and rear views of Samsung Galaxy S25 Ultra in Titanium Grey",
+        color: "Titanium Grey",
+      },
+      {
+        src: "/images/products/galaxy-s25-ultra/titanium-black.webp",
+        alt: "Front and rear views of Samsung Galaxy S25 Ultra in Titanium Black",
+        color: "Titanium Black",
+      },
+      {
+        src: "/images/products/galaxy-s25-ultra/titanium-silverblue.webp",
+        alt: "Close-up views of a Samsung Galaxy S25 Ultra",
+      },
+    ],
     features: ["Built-in S Pen", "200 MP camera", "Large AMOLED display"],
     variants: [
       { id: "galaxy-s25-ultra-256-grey", sku: "GS25U-256-TGR", attributes: { storage: "256 GB", color: "Titanium Grey" }, pricePaise: 11_999_900, stockStatus: "in_stock" },
@@ -105,11 +158,22 @@ export const PRODUCTS: readonly Product[] = Object.freeze([
     category: "smartphones",
     description:
       "OnePlus 15 is designed for fast, fluid mobile use with a responsive display. Its ample storage options make room for apps, photos, and video.",
-    images: [{ src: "/images/products/oneplus-15.webp", alt: "Neutral black smartphone render" }],
+    images: [
+      {
+        src: "/images/products/oneplus-15/infinite-black.webp",
+        alt: "Rear view of OnePlus 15 in Infinite Black",
+        color: "Infinite Black",
+      },
+      {
+        src: "/images/products/oneplus-15/sand-storm.webp",
+        alt: "Rear view of OnePlus 15 in Sand Storm",
+        color: "Sand Storm",
+      },
+    ],
     features: ["Fast charging", "High-refresh display", "Flagship performance"],
     variants: [
       { id: "oneplus-15-256-black", sku: "OP15-256-IBK", attributes: { storage: "256 GB", color: "Infinite Black" }, pricePaise: 6_499_900, stockStatus: "in_stock" },
-      { id: "oneplus-15-512-sandstone", sku: "OP15-512-SND", attributes: { storage: "512 GB", color: "Sandstone" }, pricePaise: 7_499_900, stockStatus: "in_stock" },
+      { id: "oneplus-15-512-sand-storm", sku: "OP15-512-SST", attributes: { storage: "512 GB", color: "Sand Storm" }, pricePaise: 7_499_900, stockStatus: "in_stock" },
     ],
     eligibleTenures: [6, 12, 18],
   }),
@@ -121,7 +185,22 @@ export const PRODUCTS: readonly Product[] = Object.freeze([
     category: "laptops",
     description:
       "MacBook Air delivers quiet performance in a thin, portable notebook. Its long battery life supports work, study, and creative tasks away from a desk.",
-    images: [{ src: "/images/products/macbook-air.webp", alt: "Neutral midnight laptop render" }],
+    images: [
+      {
+        src: "/images/products/macbook-air/midnight.webp",
+        alt: "MacBook Air in Midnight shown from the front, side, and top",
+        color: "Midnight",
+      },
+      {
+        src: "/images/products/macbook-air/starlight.webp",
+        alt: "MacBook Air in Starlight shown from the front, side, and top",
+        color: "Starlight",
+      },
+      {
+        src: "/images/products/macbook-air/sky-blue.webp",
+        alt: "Two open MacBook Air laptops in Sky Blue",
+      },
+    ],
     features: ["Lightweight aluminum enclosure", "Long battery life", "Liquid Retina display"],
     variants: [
       { id: "macbook-air-16-256-midnight", sku: "MBA-16-256-MDN", attributes: { memory: "16 GB", storage: "256 GB", color: "Midnight" }, pricePaise: 9_990_000, stockStatus: "in_stock" },
@@ -137,7 +216,18 @@ export const PRODUCTS: readonly Product[] = Object.freeze([
     category: "laptops",
     description:
       "MacBook Pro is built for demanding creative and development workflows. Its high-performance hardware and expansive display make complex projects easier to manage.",
-    images: [{ src: "/images/products/macbook-pro.webp", alt: "Neutral space-black laptop render" }],
+    images: [
+      {
+        src: "/images/products/macbook-pro/space-black.webp",
+        alt: "MacBook Pro in Space Black shown from the rear and keyboard",
+        color: "Space Black",
+      },
+      {
+        src: "/images/products/macbook-pro/silver.webp",
+        alt: "MacBook Pro in Silver shown from the rear and side",
+        color: "Silver",
+      },
+    ],
     features: ["Pro-grade performance", "High-resolution display", "Versatile port selection"],
     variants: [
       { id: "macbook-pro-16-512-space-black", sku: "MBP-16-512-SPB", attributes: { memory: "16 GB", storage: "512 GB", color: "Space Black" }, pricePaise: 16_990_000, stockStatus: "in_stock" },
@@ -153,7 +243,18 @@ export const PRODUCTS: readonly Product[] = Object.freeze([
     category: "laptops",
     description:
       "ASUS Zenbook 14 brings a compact premium design to everyday productivity. The 14-inch display and flexible configurations suit work that moves between home and office.",
-    images: [{ src: "/images/products/asus-zenbook-14.webp", alt: "Neutral blue laptop render" }],
+    images: [
+      {
+        src: "/images/products/asus-zenbook-14/ponder-blue.webp",
+        alt: "Front view of ASUS Zenbook 14 in Ponder Blue",
+        color: "Ponder Blue",
+      },
+      {
+        src: "/images/products/asus-zenbook-14/foggy-silver.webp",
+        alt: "Front view of ASUS Zenbook 14 in Foggy Silver",
+        color: "Foggy Silver",
+      },
+    ],
     features: ["Portable 14-inch design", "OLED display", "Fast PCIe storage"],
     variants: [
       { id: "asus-zenbook-14-16-512-ponder-blue", sku: "ZB14-16-512-PBL", attributes: { memory: "16 GB", storage: "512 GB", color: "Ponder Blue" }, pricePaise: 8_999_000, stockStatus: "in_stock" },
@@ -169,7 +270,18 @@ export const PRODUCTS: readonly Product[] = Object.freeze([
     category: "electronics",
     description:
       "Sony WH-1000XM6 headphones create a focused listening space with active noise cancellation. Comfortable earcups and long battery life are ready for commutes and flights.",
-    images: [{ src: "/images/products/sony-wh-1000xm6.webp", alt: "Neutral over-ear headphones render" }],
+    images: [
+      {
+        src: "/images/products/sony-wh-1000xm6/black.webp",
+        alt: "Sony WH-1000XM6 over-ear headphones in black",
+        color: "Black",
+      },
+      {
+        src: "/images/products/sony-wh-1000xm6/platinum-silver.webp",
+        alt: "Sony WH-1000XM6 over-ear headphones in Platinum Silver",
+        color: "Platinum Silver",
+      },
+    ],
     features: ["Industry-leading noise cancellation", "Long battery life", "Premium wireless audio"],
     variants: [
       { id: "sony-wh-1000xm6-black", sku: "WH1000XM6-BLK", attributes: { color: "Black" }, pricePaise: 3_499_000, stockStatus: "in_stock" },

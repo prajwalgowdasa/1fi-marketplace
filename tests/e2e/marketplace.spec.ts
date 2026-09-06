@@ -188,6 +188,21 @@ test("guides missing product options before entering EMI selection", async ({ pa
   await expect(page.getByRole("heading", { name: "Choose your EMI plan" })).toBeVisible();
 });
 
+test("shows the selected color image and returns to the gallery", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-chrome", "This regression covers the mobile color-selection flow.");
+
+  await page.goto("/shop/marketplace/iphone-17");
+  await expect(page.getByRole("img", { name: "Rear close-up of iPhone 17 in Black" })).toBeVisible();
+
+  const mistBlue = page.locator("label").filter({ hasText: /^Mist Blue$/ });
+  await mistBlue.scrollIntoViewIfNeeded();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  await mistBlue.click();
+
+  await expect(page.getByRole("img", { name: "Rear close-up of iPhone 17 in Mist Blue" })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(8);
+});
+
 test("keeps only the checkout buttons sticky above the bottom navigation", async ({ page }) => {
   await openIphoneConfiguration(page);
 

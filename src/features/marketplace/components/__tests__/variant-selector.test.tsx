@@ -20,7 +20,7 @@ describe("VariantSelector", () => {
   it("disables values that cannot belong to an in-stock SKU", () => {
     render(<VariantSelector product={pixelFixture} value={{}} onChange={vi.fn()} />);
 
-    expect(screen.getByRole("radio", { name: "Porcelain" })).toBeDisabled();
+    expect(screen.getByRole("radio", { name: "Frost" })).toBeDisabled();
     expect(screen.getByRole("radio", { name: "Obsidian" })).toBeEnabled();
   });
 

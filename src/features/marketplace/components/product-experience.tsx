@@ -76,12 +76,14 @@ export function ProductExperience({
     <>
       <DetailHeader />
       <div className="px-4 py-6">
-        <ProductGallery images={product.images} />
+        <ProductGallery key={selection.color ?? "unselected"} images={product.images} selectedColor={selection.color} />
         <div className="mt-6"><ProductSummary product={product} variant={selectedVariant} /></div>
         <div className="mt-7"><AffordabilityCard pricePaise={displayedPricePaise} tenureMonths={longestTenure} /></div>
         <div className="mt-7"><VariantSelector invalidAttribute={invalidAttribute} onChange={(nextSelection) => {
+          const colorChanged = Boolean(nextSelection.color && nextSelection.color !== selection.color);
           setSelection(nextSelection);
           if (invalidAttribute && nextSelection[invalidAttribute]) setInvalidAttribute(undefined);
+          if (colorChanged) window.scrollTo({ behavior: "smooth", top: 0 });
         }} product={product} value={selection} /></div>
         <div className="mt-7"><ProductFeatures features={product.features} /></div>
         <div className="mt-7"><PurchaseConfidence commerce={product.commerce} /></div>

@@ -89,6 +89,21 @@ describe("ProductExperience", () => {
     expect(screen.getByText("₹89,900")).toBeVisible();
   });
 
+  it("scrolls to the product image when a color is selected", async () => {
+    const user = userEvent.setup();
+    const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+
+    try {
+      render(<ProductExperience product={iphoneFixture} />);
+
+      await user.click(screen.getByRole("radio", { name: "Mist Blue" }));
+
+      expect(scrollTo).toHaveBeenLastCalledWith({ behavior: "smooth", top: 0 });
+    } finally {
+      scrollTo.mockRestore();
+    }
+  });
+
   it("composes trust sections in order and preserves the selection-to-EMI journey", async () => {
     const user = userEvent.setup();
     render(<ProductExperience product={iphoneFixture} relatedProducts={relatedFixtures} />);

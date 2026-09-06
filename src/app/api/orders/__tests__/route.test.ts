@@ -79,7 +79,7 @@ describe("POST /api/orders", () => {
 
   it("returns VARIANT_UNAVAILABLE for an out-of-stock variant", async () => {
     const response = await POST(
-      orderRequest({ productId: "pixel-10", variantId: "pixel-10-256-porcelain", tenureMonths: 12 }),
+      orderRequest({ productId: "pixel-10", variantId: "pixel-10-256-frost", tenureMonths: 12 }),
     );
 
     expect(response.status).toBe(422);
